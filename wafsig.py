@@ -467,6 +467,6 @@ waf_sig = {
   'Apache': r'apache|mod_security|mod_security2',
   'Apache ModSecurity Core Rule Set (CRS)': r'modsecurity|crs',
   'Apache OWASP ModSecurity Core Rule Set (CRS)': r'owasp|modsecurity|crs',
-  'Apache ModSecurity with OWASP Core Rule Set (CRS)': r'modsecurity|owasp|crs',
+  'Apache ModSecurity with OWASP Core Rule Set (CRS)': r'modsecurity|owasp|crs'
    
 }
