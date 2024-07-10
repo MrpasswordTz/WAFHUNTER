@@ -1,4 +1,4 @@
-<img src="https://github.com/MrpasswordTz/WAFHUNTER/blob/main/logo/waf.jpg" alt="Waf img">
+
 
 # WAFHUNTER 
 
