@@ -463,5 +463,9 @@ waf_sig = {
   'Astra Website Protection Cloud Web Security': r'astra|website|cloudweb',
   'iniOrange Reverse Proxy Cloud Web Security': r'miniorange|reverse|cloudweb',
   'Bekchy Cloud Web Security': r'bekchy|cloudweb',
-  'HAProxy One Cloud Web Security': r'haproxy|one|'
+  'HAProxy One Cloud Web Security': r'haproxy|one|',
+  'Apache': r'apache|mod_security|mod_security2',
+  'Apache ModSecurity Core Rule Set (CRS)': r'modsecurity|crs',
+  'Apache OWASP ModSecurity Core Rule Set (CRS)': r'owasp|modsecurity|crs',
+  'Apache ModSecurity with OWASP Core Rule Set (CRS)': r'modsecurity|owasp|crs'
 }
