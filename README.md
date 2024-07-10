@@ -14,6 +14,35 @@ WAFHUNTER(WAFHUNTER(Web Application Firewall Detector): is a Python script desig
   <li>Supports both linux(Deb) and Termux </li>
 </ul>
 
+# installation termux:
+```
+pkg update
+
+pkg install git
+
+pkg install python python2 python3
+
+git clone https://github.com/MrpasswordTz/WAFHUNTER.git
+
+cd WAFHUNTER
+
+pip install -r requirements.txt
+
+Python3 wafhunter.py
+```
+# Installation for Linux(Deb)
+```
+apt update
+
+git clone https://github.com/MrpasswordTz/WAFHUNTER.git
+
+cd WAFHUNTER
+
+pip install -r requirements.txt
+
+python3 wafhunter.py
+```
+
 # Contributing:
 If you'd like to contribute to WAFHUNTER, please fork this repository and submit a pull request with your updates. We welcome additions to the WAF signature list and any other improvements to the script.
 
