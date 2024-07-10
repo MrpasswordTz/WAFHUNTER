@@ -28,7 +28,7 @@ cd WAFHUNTER
 
 pip install -r requirements.txt
 
-Python3 wafhunter.py
+python3 wafhunter.py
 ```
 # Installation for Linux(Deb)
 ```
