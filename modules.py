@@ -18,7 +18,7 @@ banner = Fore.GREEN +'''
  \/  \/\_| |_/\_|   |_| |_|\__,_|_| |_|\__\___|_|   
                                                     
                                                        
-github: MrpasswordTz
+github : MrpasswordTz
 version: 1.0
 country: Tanzania
 ''' +Fore.RESET
