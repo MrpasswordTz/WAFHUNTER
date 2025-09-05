@@ -301,8 +301,7 @@ This tool is for educational and authorized testing purposes only. Users are res
 
 ## 👥 Authors
 
-- **MrpasswordTz** - *Initial work* - [GitHub](https://github.com/MrpasswordTz)
-- **WAFHUNTER Team** - *Professional Edition* - [GitHub](https://github.com/MrpasswordTz/WAFHUNTER)
+- **MrpasswordTz** - *Professional Edition* - [GitHub](https://github.com/MrpasswordTz/WAFHUNTER)
 
 ## 🙏 Acknowledgments
 
