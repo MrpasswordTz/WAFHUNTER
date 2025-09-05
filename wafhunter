@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# WAFHUNTER Launcher Script
+# Professional Edition v3.0
+
+# Get the directory where the script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Change to the script directory
+cd "$SCRIPT_DIR"
+
+# Check if Python 3 is available
+if command -v python3 &> /dev/null; then
+    PYTHON_CMD="python3"
+elif command -v python &> /dev/null; then
+    PYTHON_CMD="python"
+else
+    echo "Error: Python is not installed or not in PATH"
+    exit 1
+fi
+
+# Check if wafhunter.py exists
+if [ ! -f "wafhunter.py" ]; then
+    echo "Error: wafhunter.py not found in $SCRIPT_DIR"
+    exit 1
+fi
+
+# Run WAFHUNTER with all passed arguments
+exec $PYTHON_CMD wafhunter.py "$@"

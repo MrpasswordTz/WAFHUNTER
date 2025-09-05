@@ -1,0 +1,38 @@
+{
+  "default_settings": {
+    "timeout": 10,
+    "max_retries": 3,
+    "concurrency": 5,
+    "stealth_mode": false,
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+  },
+  "waf_signatures": {
+    "enable_version_detection": true,
+    "enable_bypass_suggestions": true,
+    "confidence_threshold": 0.6
+  },
+  "output": {
+    "default_format": "text",
+    "include_headers": true,
+    "include_response_time": true,
+    "include_confidence_score": true
+  },
+  "stealth": {
+    "randomize_user_agents": true,
+    "randomize_request_timing": true,
+    "use_tor_proxy": false,
+    "max_requests_per_second": 2
+  },
+  "reporting": {
+    "include_technical_details": true,
+    "include_bypass_techniques": true,
+    "include_recommendations": true,
+    "timestamp_format": "%Y-%m-%d %H:%M:%S"
+  },
+  "advanced": {
+    "enable_payload_testing": true,
+    "enable_timing_analysis": true,
+    "enable_header_manipulation": true,
+    "enable_protocol_fuzzing": false
+  }
+}
