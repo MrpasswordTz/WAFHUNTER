@@ -1,6 +1,6 @@
 # WAFHUNTER - Advanced Web Application Firewall Detection Tool
 
-<img src="https://github.com/MrpasswordTz/WAFHUNTER/blob/main/logo/wafLogo.jpg" alt="WAFHUNTER Logo" width="200" height="100">
+<img src="https://github.com/MrpasswordTz/WAFHUNTER/blob/main/logo/wafLogo.jpg" alt="WAFHUNTER Logo" width="800" height="500">
 
 [![Version](https://img.shields.io/badge/version-3.0-blue.svg)](https://github.com/MrpasswordTz/WAFHUNTER)
 [![Python](https://img.shields.io/badge/python-3.7+-green.svg)](https://python.org)
