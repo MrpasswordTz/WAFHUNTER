@@ -314,7 +314,6 @@ This tool is for educational and authorized testing purposes only. Users are res
 
 - **Issues**: [GitHub Issues](https://github.com/MrpasswordTz/WAFHUNTER/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/MrpasswordTz/WAFHUNTER/discussions)
-- **Email**: support@wafhunter.com
 
 ## 🚀 Enhanced Bypass Techniques Integration
 
@@ -451,4 +450,4 @@ This will demonstrate:
 
 **WAFHUNTER Enhanced Edition - Powered by Advanced Bypass Techniques**
 
-**Made with ❤️ by the WAFHUNTER Team**
+**Made with ❤️ by the MrpasswordTz**
