@@ -9,12 +9,14 @@ import sys
 import os
 import json
 import re
+import tempfile
 from unittest.mock import Mock, patch, MagicMock
 
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from modules import WAFDetector, WAFHunterScanner, WAFDetectionResult
+from wafhunter import load_targets_from_file
 from waf_signatures import WAF_SIGNATURES
 
 class TestWAFDetector(unittest.TestCase):
@@ -333,6 +335,44 @@ class TestIntegration(unittest.TestCase):
         
         self.assertIsInstance(result, WAFDetectionResult)
         self.assertEqual(result.host, 'example.com')
+
+class TestTargetFileParsing(unittest.TestCase):
+    """Test targets file parsing and auto-detection"""
+
+    @patch('wafhunter._auto_detect_target', return_value=('https', 443))
+    def test_load_targets_from_file_parses_mixed_formats(self, mock_auto_detect):
+        content = "\n".join([
+            "example.com",
+            "target.com:8080",
+            "https://secure.example.com:9443",
+            "# commented-entry",
+            "invalid host name"
+        ])
+
+        with tempfile.NamedTemporaryFile('w+', delete=False) as temp_file:
+            temp_file.write(content)
+            temp_path = temp_file.name
+
+        try:
+            targets = load_targets_from_file(
+                temp_path,
+                timeout=5,
+                default_protocol='http',
+                default_port=80
+            )
+        finally:
+            os.unlink(temp_path)
+
+        self.assertEqual(len(targets), 3)
+        self.assertEqual(targets[0], {'host': 'example.com', 'protocol': 'https', 'port': 443})
+        self.assertEqual(targets[1], {'host': 'target.com', 'protocol': 'http', 'port': 8080})
+        self.assertEqual(targets[2], {'host': 'secure.example.com', 'protocol': 'https', 'port': 9443})
+        mock_auto_detect.assert_called_once_with(
+            'example.com',
+            timeout=5,
+            default_protocol='http',
+            default_port=80
+        )
 
 if __name__ == '__main__':
     # Run tests

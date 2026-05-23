@@ -91,9 +91,17 @@ python3 wafhunter.py example.com
 # Multiple targets
 python3 wafhunter.py example.com target.com victim.com
 
+# Targets from file (one target per line)
+python3 wafhunter.py --targets-file targets.txt
+
 # Custom port and protocol
 python3 wafhunter.py example.com --port 8080 --protocol https
 ```
+
+`--targets-file` accepts these per-line formats:
+- `example.com` (auto-detects protocol/port by trying HTTPS:443 then HTTP:80)
+- `example.com:8443` (uses port and infers protocol from common ports)
+- `https://example.com:9443` (uses explicit protocol/port)
 
 ### Advanced Usage
 

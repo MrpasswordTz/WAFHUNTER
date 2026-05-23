@@ -12,6 +12,8 @@ import argparse
 import sys
 import os
 import logging
+import socket
+from urllib.parse import urlparse
 from pathlib import Path
 from colorama import Fore, Style, init
 from modules import WAFHunterScanner, WAFHunterLogger, BANNER, EXAMPLE_USAGE
@@ -30,8 +32,13 @@ def create_parser():
     # Required arguments
     parser.add_argument(
         'hosts',
-        nargs='+',
+        nargs='*',
         help='Hostnames or IP addresses to scan (space-separated)'
+    )
+
+    parser.add_argument(
+        '--targets-file',
+        help='File containing one target per line (supports host, host:port, and URL formats)'
     )
     
     # Connection options
@@ -194,6 +201,88 @@ def validate_hosts(hosts):
     
     return valid_hosts
 
+def _validate_single_host(host):
+    """Validate a single host value"""
+    return bool(host and validate_hosts([host]))
+
+def _infer_protocol_from_port(port, default_protocol='http'):
+    """Infer protocol using common port conventions"""
+    if port == 443:
+        return 'https'
+    if port == 80:
+        return 'http'
+    return default_protocol
+
+def _auto_detect_target(host, timeout, default_protocol='http', default_port=80):
+    """Auto-detect best protocol/port by testing common web ports"""
+    for protocol, port in (('https', 443), ('http', 80)):
+        try:
+            with socket.create_connection((host, port), timeout=timeout):
+                return protocol, port
+        except OSError:
+            continue
+    return default_protocol, default_port
+
+def _parse_target_entry(raw_target, default_protocol='http', default_port=80):
+    """Parse target entry from file into host/protocol/port"""
+    target = raw_target.strip()
+    if not target or target.startswith('#'):
+        return None
+
+    protocol = default_protocol
+    port = default_port
+    host = target
+
+    if '://' in target:
+        parsed = urlparse(target)
+        host = parsed.hostname or ''
+        protocol = parsed.scheme or default_protocol
+        port = parsed.port or (443 if protocol == 'https' else 80)
+    elif ':' in target:
+        host_part, port_part = target.rsplit(':', 1)
+        if port_part.isdigit():
+            host = host_part
+            port = int(port_part)
+            protocol = _infer_protocol_from_port(port, default_protocol)
+
+    host = host.strip()
+    if not _validate_single_host(host):
+        print(f"{Fore.YELLOW}Warning: Invalid target format: {raw_target}{Fore.RESET}")
+        return None
+
+    return {'host': host, 'protocol': protocol, 'port': port}
+
+def load_targets_from_file(file_path, timeout, default_protocol='http', default_port=80):
+    """Load and parse targets from file"""
+    targets = []
+    try:
+        with open(file_path, 'r') as f:
+            for raw_line in f:
+                parsed_target = _parse_target_entry(
+                    raw_line,
+                    default_protocol=default_protocol,
+                    default_port=default_port
+                )
+                if not parsed_target:
+                    continue
+
+                if '://' not in raw_line and ':' not in raw_line:
+                    auto_protocol, auto_port = _auto_detect_target(
+                        parsed_target['host'],
+                        timeout=timeout,
+                        default_protocol=parsed_target['protocol'],
+                        default_port=parsed_target['port']
+                    )
+                    parsed_target['protocol'] = auto_protocol
+                    parsed_target['port'] = auto_port
+
+                targets.append(parsed_target)
+    except OSError as e:
+        print(f"{Fore.RED}Error loading targets file: {e}{Fore.RESET}")
+        return []
+
+    return targets
+
 def main():
     """Main function"""
     parser = create_parser()
@@ -212,9 +301,23 @@ def main():
     logger = setup_logging(args)
     
     # Validate hosts
-    hosts = validate_hosts(args.hosts)
-    if not hosts:
-        print(f"{Fore.RED}Error: No valid hosts provided{Fore.RESET}")
+    targets = []
+    if args.targets_file:
+        targets = load_targets_from_file(
+            args.targets_file,
+            timeout=args.timeout,
+            default_protocol=args.protocol,
+            default_port=args.port
+        )
+    elif args.hosts:
+        hosts = validate_hosts(args.hosts)
+        targets = [
+            {'host': host, 'protocol': args.protocol, 'port': args.port}
+            for host in hosts
+        ]
+
+    if not targets:
+        print(f"{Fore.RED}Error: No valid targets provided. Use hosts and/or --targets-file{Fore.RESET}")
         sys.exit(1)
     
     # Create scanner
@@ -252,14 +355,12 @@ def main():
     # Start scanning
     try:
         if not args.quiet:
-            print(f"{Fore.CYAN}[*] Starting scan for {len(hosts)} hosts...{Fore.RESET}")
+            print(f"{Fore.CYAN}[*] Starting scan for {len(targets)} hosts...{Fore.RESET}")
             if args.stealth:
                 print(f"{Fore.YELLOW}[*] Stealth mode enabled{Fore.RESET}")
         
-        results = scanner.scan_hosts(
-            hosts=hosts,
-            port=args.port,
-            protocol=args.protocol,
+        results = scanner.scan_targets(
+            targets=targets,
             path=args.path,
             method=args.method
         )

@@ -385,21 +385,27 @@ class WAFHunterScanner:
         self.detector = WAFDetector(logger=self.logger)
         self.results = []
     
-    def scan_hosts(self, hosts: List[str], port: int = 80, protocol: str = 'http', 
-                   path: str = '/', method: str = 'GET') -> List[WAFDetectionResult]:
-        """Scan multiple hosts for WAF detection"""
-        self.logger.info(f"Starting scan for {len(hosts)} hosts")
-        
+    def scan_targets(self, targets: List[Dict[str, Any]], path: str = '/', 
+                     method: str = 'GET') -> List[WAFDetectionResult]:
+        """Scan multiple targets with per-target protocol/port settings"""
+        self.logger.info(f"Starting scan for {len(targets)} hosts")
+
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-            future_to_host = {
+            future_to_target = {
                 executor.submit(
                     self.detector.detect_waf, 
-                    host, port, protocol, path, method, self.stealth
-                ): host for host in hosts
+                    target['host'],
+                    target.get('port', 80),
+                    target.get('protocol', 'http'),
+                    path,
+                    method,
+                    self.stealth
+                ): target for target in targets
             }
             
-            for future in as_completed(future_to_host):
-                host = future_to_host[future]
+            for future in as_completed(future_to_target):
+                target = future_to_target[future]
+                host = target.get('host', 'unknown')
                 try:
                     result = future.result()
                     self.results.append(result)
@@ -415,6 +421,12 @@ class WAFHunterScanner:
                     self.results.append(error_result)
         
         return self.results
+
+    def scan_hosts(self, hosts: List[str], port: int = 80, protocol: str = 'http', 
+                   path: str = '/', method: str = 'GET') -> List[WAFDetectionResult]:
+        """Scan multiple hosts for WAF detection"""
+        targets = [{'host': host, 'port': port, 'protocol': protocol} for host in hosts]
+        return self.scan_targets(targets=targets, path=path, method=method)
     
     def _print_result(self, result: WAFDetectionResult):
         """Print detection result with color coding"""
